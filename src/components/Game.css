@@ -1,0 +1,68 @@
+.flex-container {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  height: 100vh;
+  width: 100%;
+  background-color: lightgray;
+}
+
+.game-container {
+  background-color: cornsilk;
+  border: 10px solid burlywood;
+  border-radius: 15px;
+  width: 80%;
+  margin: 20px;
+}
+
+.match-controller-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20%;
+}
+
+.match-controller-btn {
+  width: 250px;
+  height: 50px;
+  background-color: dodgerblue;
+  color: white;
+  border-radius: 4px;
+  border: none;
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.scores-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 20px;
+}
+.innings-score {
+  padding: 20px;
+  position: relative;
+  width: 200px;
+  height: 50px;
+  border-radius: 5px;
+  z-index: 1000px;
+  color: white;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.winner-display-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  margin-top: 10%;
+}
+.winner {
+  background-color: green;
+  font-size: 50px;
+  font-weight: 800;
+  padding: 10px;
+}
