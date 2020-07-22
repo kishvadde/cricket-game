@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 
 import './Game.css';
@@ -12,44 +13,21 @@ const MATCH_STATUS = {
   matchCompleted: 'matchCompleted',
 };
 
-const inningsInitialState = {
-  totalScore: 0,
-  wicketsLeft: 10,
-  oversLeft: 20,
-  currentOver: '',
-  currentOverBallsLeft: 6,
-  allOversScores: [],
-  currentBowler: {},
-  currentBatsMen: [],
-  batsMenScores: [],
-  bowlerDetails: [],
-};
-
-function BatsManScoreDetail(name) {
-  this.name = name;
-  this.runs = 0;
-  this.ballsPlayed = 0;
-  this.fours = 0;
-  this.sixes = 0;
-  this.wicketBy = '';
-  this.StrickRate = 0;
+function InningsInitialState(numberOfOvers) {
+  return {
+    totalScore: 0,
+    wicketsLeft: 10,
+    oversLeft: numberOfOvers,
+    currentOver: '',
+    currentOverBallsLeft: 6,
+    allOversScores: [],
+  };
 }
 
-function BowlerWicketsDetails(name) {
-  this.name = name;
-  this.overs = 0;
-  this.runs = 9;
-  this.wickets = '';
-  this.economy = '';
-  this.zeros = 0;
-  this.fours = 0;
-  this.sixes = 0;
-  this.wides = 0;
-  this.noBalls = 0;
-}
-
-function useInnings(teamName) {
-  const [inningsState, setInningsState] = useState(inningsInitialState);
+function useInnings(teamName, numberOfOvers) {
+  const [inningsState, setInningsState] = useState(
+    new InningsInitialState(numberOfOvers)
+  );
   const [currentBallValue, setCurrentBallValue] = useState(undefined);
   const [intervalId, setIntervalId] = useState(null);
   const {
@@ -66,12 +44,14 @@ function useInnings(teamName) {
     return values[Math.floor(Math.random() * values.length)];
   };
 
-  const setInningsStateHelper = (key, value) => {
-    setInningsState({
-      ...inningsState,
-      [key]: value,
-    });
-  };
+  useEffect(() => {
+    if (!wicketsLeft && oversLeft) {
+      setInningsState({
+        ...inningsState,
+        allOversScores: [...inningsState.allOversScores, currentOver],
+      });
+    }
+  }, [wicketsLeft]);
 
   useEffect(() => {
     if (currentBallValue !== undefined) {
@@ -87,7 +67,7 @@ function useInnings(teamName) {
         inningsUpdatedState.currentOverBallsLeft = currentOverBallsLeft - 1;
       }
 
-      if (currentOverBallsLeft === 1) {
+      if (currentOverBallsLeft === 0) {
         inningsUpdatedState.currentOverBallsLeft = 6;
         inningsUpdatedState.oversLeft = oversLeft - 1;
         inningsUpdatedState.currentOver = '';
@@ -108,44 +88,12 @@ function useInnings(teamName) {
         ...inningsUpdatedState,
       });
       console.log(
-        `${teamName} ${totalScore}/${10 - wicketsLeft} (${20 - oversLeft}.${
-          6 - currentOverBallsLeft
-        })`
+        `${teamName} ${totalScore}/${10 - wicketsLeft} (${
+          numberOfOvers - oversLeft
+        }.${6 - currentOverBallsLeft})`
       );
     }
   }, [currentBallValue]);
-
-  //   const assignBowler = (nextBowlerIndex) => {
-  //     const nextBowler = bowlers[nextBowlerIndex];
-  //     const nextBowlerDetails = bowlerDetails.find((bowler) => {
-  //       return bowler.id === nextBowler.id;
-  //     });
-  //     if (!nextBowlerDetails) {
-  //       bowlerDetails.push(new BowlerWicketsDetails(nextBowler.name));
-  //       setInningsStateHelper(
-  //         'currentBowler',
-  //         bowlerDetails[bowlerDetails.length - 1]
-  //       );
-  //     } else {
-  //       setInningsStateHelper('currentBowler', nextBowlerDetails);
-  //     }
-  //   };
-
-  //   const assignBatsMan = (nextBatsManIndex) => {
-  //     const nextBatsMan = batsMen[nextBatsManIndex];
-  //     const nextBatsManDetails = batsMenScores.find((batsMan) => {
-  //       return batsMan.id === nextBatsMan.id;
-  //     });
-  //     if (!nextBatsManDetails) {
-  //       batsMenScores.push(new BatsManScoreDetail(nextBatsMan.name));
-  //       setInningsStateHelper(
-  //         'currentBatsMan',
-  //         batsMenScores[batsMenScores.length - 1]
-  //       );
-  //     } else {
-  //       setInningsStateHelper('currentBatsMan', nextBatsManDetails);
-  //     }
-  //   };
 
   const startInnings = () => {
     const intervalId = setInterval(() => {
@@ -162,32 +110,42 @@ function useInnings(teamName) {
     }
   };
 
-  const pauseInnings = () => {
+  const resetInnings = () => {
     if (intervalId) {
       clearInterval(intervalId);
     }
+    setInningsState(new InningsInitialState(numberOfOvers));
+    setCurrentBallValue(undefined);
   };
 
-  return { teamName, inningsState, startInnings, pauseInnings, stopInnings };
+  return { teamName, inningsState, startInnings, stopInnings, resetInnings };
 }
 
-const Game = () => {
+const Game = ({ numberOfOvers }) => {
   const [matchStatus, setMatchStatus] = useState(MATCH_STATUS.notStarted);
   const [controllerLabel, setControllerLabel] = useState('Start');
+
   const {
     teamName: team1,
     inningsState: firstInnings,
     startInnings: startFirstInnings,
-    pauseInnings: pauseFirstInnings,
     stopInnings: stopFirstInnings,
-  } = useInnings('Team1');
+    resetInnings: resetFirstInnings,
+  } = useInnings('Team1', numberOfOvers);
   const {
     teamName: team2,
     inningsState: secondInnings,
     startInnings: startSecondInnings,
-    pauseInnings: pauseSecondInnings,
     stopInnings: stopSecondInnings,
-  } = useInnings('Team2');
+    resetInnings: resetSecondInnings,
+  } = useInnings('Team2', numberOfOvers);
+
+  useEffect(() => {
+    setMatchStatus(MATCH_STATUS.notStarted);
+    resetFirstInnings();
+    resetSecondInnings();
+    setControllerLabel('Start');
+  }, [numberOfOvers]);
 
   useEffect(() => {
     if (!firstInnings.oversLeft || !firstInnings.wicketsLeft) {
@@ -215,7 +173,7 @@ const Game = () => {
       };
     } else if (matchStatus === MATCH_STATUS.firstInningsInProgress) {
       controller = () => {
-        pauseFirstInnings();
+        stopFirstInnings();
         setMatchStatus(MATCH_STATUS.firstInningsPaused);
         setControllerLabel('Start');
       };
@@ -233,7 +191,8 @@ const Game = () => {
       };
     } else if (matchStatus === MATCH_STATUS.secondInningsInProgress) {
       controller = () => {
-        pauseSecondInnings();
+        setMatchStatus(MATCH_STATUS.secondInningsPaused);
+        stopSecondInnings();
         setControllerLabel('Start');
       };
     } else if (matchStatus === MATCH_STATUS.secondInningsPaused) {
@@ -247,45 +206,98 @@ const Game = () => {
   };
 
   return (
-    <div className="flex-container">
-      <div className="game-container">
-        <div className="scores-container">
-          <div className="innings-score" style={{ backgroundColor: 'brown' }}>
-            <div>{`${team1} ${firstInnings.totalScore}/${
-              10 - firstInnings.wicketsLeft
-            } (${20 - firstInnings.oversLeft}.${
-              6 - firstInnings.currentOverBallsLeft
-            })`}</div>
-            <div>{firstInnings.currentOver}</div>
-          </div>
-          <div
-            style={{ backgroundColor: 'blueviolet' }}
-            className="innings-score"
-          >
-            <div>{`${team2} ${secondInnings.totalScore}/${
-              10 - secondInnings.wicketsLeft
-            } (${20 - secondInnings.oversLeft}.${
-              6 - secondInnings.currentOverBallsLeft
-            })`}</div>
-            <div>{secondInnings.currentOver}</div>
-          </div>
-        </div>
-        <div className="match-controller-container">
-          <button
-            className="match-controller-btn"
-            onClick={getMatchControllerAction()}
-          >
-            {controllerLabel}
-          </button>
-        </div>
+    <div>
+      <div className="match-controller-container">
+        <button
+          className="match-controller-btn"
+          onClick={getMatchControllerAction()}
+        >
+          {controllerLabel}
+        </button>
         {matchStatus === MATCH_STATUS.matchCompleted ? (
           <div className="winner-display-container">
-            <div className="winner">
-              {`Winner:
+            {`Winner:
           ${
             firstInnings.totalScore > secondInnings.totalScore ? team1 : team2
           }!!`}
+          </div>
+        ) : null}
+      </div>
+      <div className="scores-container">
+        <div
+          className="innings-score-container"
+          style={{ backgroundColor: '#5148a5' }}
+        >
+          <div className="innings-score">
+            <div>
+              {`${team1} ${firstInnings.totalScore}/${
+                10 - firstInnings.wicketsLeft
+              } (${numberOfOvers - firstInnings.oversLeft}.${
+                6 - firstInnings.currentOverBallsLeft
+              })`}
             </div>
+            {firstInnings.currentOver && (
+              <div style={{ marginTop: '20px' }}>
+                {firstInnings.currentOver}
+              </div>
+            )}
+          </div>
+        </div>
+        <div
+          className="innings-score-container"
+          style={{ backgroundColor: '#93b36f' }}
+        >
+          <div className="innings-score">
+            <div>
+              {`${team2} ${secondInnings.totalScore}/${
+                10 - secondInnings.wicketsLeft
+              } (${numberOfOvers - secondInnings.oversLeft}.${
+                6 - secondInnings.currentOverBallsLeft
+              })`}
+            </div>
+            {secondInnings.currentOver && (
+              <div style={{ marginTop: '20px' }}>
+                {secondInnings.currentOver}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="score-by-overs-container">
+        {firstInnings.allOversScores.length ? (
+          <div className="scores-table-container">
+            <table className="scores-table1">
+              <tr>
+                <th>Over</th>
+                <th>Score</th>
+              </tr>
+              {firstInnings.allOversScores.map((value, index) => {
+                return (
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td>{value}</td>
+                  </tr>
+                );
+              })}
+            </table>
+          </div>
+        ) : null}
+        {secondInnings.allOversScores.length ? (
+          <div className="scores-table-container">
+            <table className="scores-table2">
+              <tr>
+                <th>Over</th>
+                <th>Score</th>
+              </tr>
+              {secondInnings.allOversScores.map((value, index) => {
+                return (
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td>{value}</td>
+                  </tr>
+                );
+              })}
+            </table>
           </div>
         ) : null}
       </div>

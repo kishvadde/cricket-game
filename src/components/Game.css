@@ -1,35 +1,26 @@
-.flex-container {
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  height: 100vh;
-  width: 100%;
-  background-color: lightgray;
-}
-
-.game-container {
-  background-color: cornsilk;
-  border: 10px solid burlywood;
-  border-radius: 15px;
-  width: 80%;
-  margin: 20px;
-}
-
 .match-controller-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20%;
+  justify-content: space-between;
+  margin-left: 20px;
+}
+
+.winner-display-container {
+  color: white;
+  background-color: green;
+  font-size: 20px;
+  font-weight: 800;
+  padding: 10px;
+  margin-right: 20px;
 }
 
 .match-controller-btn {
-  width: 250px;
-  height: 50px;
-  background-color: dodgerblue;
+  width: 100px;
+  height: 30px;
+  background-color: #5d8de4;
   color: white;
   border-radius: 4px;
   border: none;
-  font-size: 20px;
+  font-size: 14px;
   font-weight: 800;
   cursor: pointer;
   text-transform: uppercase;
@@ -37,32 +28,88 @@
 
 .scores-container {
   display: flex;
-  justify-content: space-around;
-  align-items: center;
+  justify-content: space-between;
   margin: 20px;
 }
-.innings-score {
-  padding: 20px;
-  position: relative;
-  width: 200px;
-  height: 50px;
+
+.innings-score-container {
+  width: 45%;
+  height: 100px;
   border-radius: 5px;
-  z-index: 1000px;
-  color: white;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 600;
 }
 
-.winner-display-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.innings-score {
+  padding: 20px;
   color: white;
-  margin-top: 10%;
 }
-.winner {
-  background-color: green;
-  font-size: 50px;
-  font-weight: 800;
-  padding: 10px;
+
+.score-by-overs-container {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px;
+}
+
+.scores-table-container {
+  width: 45%;
+  height: 550px;
+  overflow-y: auto;
+  background-color: white;
+}
+
+.scores-table1 {
+  font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.scores-table1 td,
+.scores-table1 th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.scores-table1 tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.scores-table1 tr:hover {
+  background-color: #ddd;
+}
+
+.scores-table1 th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #5148a5;
+  color: white;
+}
+
+.scores-table2 {
+  font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.scores-table2 td,
+.scores-table2 th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.scores-table2 tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.scores-table2 tr:hover {
+  background-color: #ddd;
+}
+
+.scores-table2 th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #93b36f;
+  color: white;
 }
