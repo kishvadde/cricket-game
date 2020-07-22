@@ -46,10 +46,12 @@ function useInnings(teamName, numberOfOvers) {
 
   useEffect(() => {
     if (!wicketsLeft && oversLeft) {
-      setInningsState({
-        ...inningsState,
-        allOversScores: [...inningsState.allOversScores, currentOver],
-      });
+      if (currentOver) {
+        setInningsState({
+          ...inningsState,
+          allOversScores: [...inningsState.allOversScores, currentOver],
+        });
+      }
     }
   }, [wicketsLeft]);
 
@@ -264,42 +266,38 @@ const Game = ({ numberOfOvers }) => {
         </div>
       </div>
       <div className="score-by-overs-container">
-        {firstInnings.allOversScores.length ? (
-          <div className="scores-table-container">
-            <table className="scores-table1">
-              <tr>
-                <th>Over</th>
-                <th>Score</th>
-              </tr>
-              {firstInnings.allOversScores.map((value, index) => {
-                return (
-                  <tr>
-                    <td>{index + 1}</td>
-                    <td>{value}</td>
-                  </tr>
-                );
-              })}
-            </table>
-          </div>
-        ) : null}
-        {secondInnings.allOversScores.length ? (
-          <div className="scores-table-container">
-            <table className="scores-table2">
-              <tr>
-                <th>Over</th>
-                <th>Score</th>
-              </tr>
-              {secondInnings.allOversScores.map((value, index) => {
-                return (
-                  <tr>
-                    <td>{index + 1}</td>
-                    <td>{value}</td>
-                  </tr>
-                );
-              })}
-            </table>
-          </div>
-        ) : null}
+        <div className="scores-table-container">
+          <table className="scores-table1">
+            <tr>
+              <th>Over</th>
+              <th>Score</th>
+            </tr>
+            {firstInnings.allOversScores.map((value, index) => {
+              return (
+                <tr>
+                  <td>{index + 1}</td>
+                  <td>{value}</td>
+                </tr>
+              );
+            })}
+          </table>
+        </div>
+        <div className="scores-table-container">
+          <table className="scores-table2">
+            <tr>
+              <th>Over</th>
+              <th>Score</th>
+            </tr>
+            {secondInnings.allOversScores.map((value, index) => {
+              return (
+                <tr>
+                  <td>{index + 1}</td>
+                  <td>{value}</td>
+                </tr>
+              );
+            })}
+          </table>
+        </div>
       </div>
     </div>
   );
